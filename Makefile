@@ -26,5 +26,5 @@ clean:
 	cd src/kernel && cargo clean
 	rm -rf target/*
 
-run:
+run: build
 	qemu-system-x86_64 -cdrom target/atos.iso
