@@ -1,3 +1,6 @@
+%ifndef UTIL_ASM
+%define UTIL_ASM
+
 ;; function print
 ;; - esi: string ptr
 ;; - eax: line offset
@@ -22,3 +25,5 @@ print:
     ; increment counter and loop 
     inc ecx
     jmp .loop
+
+%endif
