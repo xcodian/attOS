@@ -22,9 +22,14 @@ You may build the bootable `.iso` file with
 $ make
 ```
 
-You may build and emulate atOS in one command with
+You may emulate the built atOS with
 ```
 $ make run
+```
+
+You may build and emulate atOS in one command with
+```
+$ make dev
 ```
 
 ### Directory Layout

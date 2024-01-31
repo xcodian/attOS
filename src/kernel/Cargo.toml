@@ -3,6 +3,10 @@ name = "atos-kernel"
 version = "0.1.0"
 edition = "2021"
 
+# warning: this being here will not make cargo emit .a files by itself
+# compile with `cargo rustc --crate-type staticlib --release --`
+crate-type = ["staticlib"]
+
 [profile.dev]
 panic = "abort"
 

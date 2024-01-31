@@ -2,6 +2,7 @@ section .text
 bits 64
 
 global start64
+
 extern kernel_main
 
 %include "src/init/util.asm"
@@ -17,10 +18,10 @@ start64:
   mov esi, s_hello64
   mov eax, 2
   call print
-  
+
   jmp kernel_main
 
   hlt
 
 section .data
-s_hello64    db '[ ok ] in long mode, jmp kernel_main YOLOOOO', 0x00
+s_hello64    db '[ ok ] entering kernel', 0x00

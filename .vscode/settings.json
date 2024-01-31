@@ -1,5 +1,11 @@
-{
-    "editor.tabSize": 2,
+{   
+    "editor.tabSize": 4,
+    "[asm-intel-x86-generic]": {
+        "editor.tabSize": 2,
+    },
+    "[linkerscript]": {
+        "editor.tabSize": 2,
+    },
     "rust-analyzer.linkedProjects": [
         "src/kernel/Cargo.toml"
     ],
