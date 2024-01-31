@@ -1,4 +1,4 @@
-use core::{alloc::{GlobalAlloc, Layout}, ptr::null_mut};
+use core::{alloc::GlobalAlloc, ptr::null_mut};
 
 #[global_allocator]
 static ALLOCATOR: Dummy = Dummy {};
