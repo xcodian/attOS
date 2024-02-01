@@ -1,11 +1,11 @@
 use core::{alloc::GlobalAlloc, ptr::null_mut};
 
 #[global_allocator]
-static ALLOCATOR: Dummy = Dummy {};
+static ALLOCATOR: NopAllocator = NopAllocator {};
 
-pub struct Dummy;
+pub struct NopAllocator;
 
-unsafe impl GlobalAlloc for Dummy {
+unsafe impl GlobalAlloc for NopAllocator {
     unsafe fn alloc(&self, layout: core::alloc::Layout) -> *mut u8 {
         null_mut()
     }
