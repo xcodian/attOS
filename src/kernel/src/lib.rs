@@ -9,6 +9,7 @@ mod heap;
 mod interrupts;
 mod panic;
 mod port;
+mod sync;
 mod textmode;
 mod writer;
 
@@ -29,7 +30,7 @@ unsafe extern "C" fn kernel_main() -> ! {
     println!("[ ok ] set up interrupts");
     neofetch();
 
-    println!("The PIC timer interrupt is creating these dots:");
+    println!("The PIC timer interrupt is running.");
 
     loop {}
 }
