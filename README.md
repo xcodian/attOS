@@ -1,4 +1,18 @@
-# atOS: Another Tiny Operating System
+```
+                                                   .d88b,  MMMMMMMMMMM MMMMMMMMMMM
+                                             qq         8  MMP"""""YMM MP""""""`MM 
+                                             88    d8888P  M' .mmm. `M M  mmmmm..M 
+                                  .d8888b. d8888P  8       M  MMMMM  M M.      `YM 
+                                  88'  `88   88    `8888'  M  MMMMM  M MMMMMMM.  M 
+                                  88.  .88   88            M. `MMM' .M M. .MMM'  M 
+                                  `88888P8   dP            MMb.   .dMM Mb.     .dM 
+                                                           MMMMMMMMMMM MMMMMMMMMMM 
+                                  
+                                      Another Tiny Test Operating System
+                                             by Martin Velikov
+```
+
+# attOS: Another Tiny Test Operating System
 atOS is a research operating system made for fun and educational purposes, like many of its ancestors.
 
 ### Install Dependencies
@@ -9,6 +23,8 @@ atOS needs the following build dependencies:
 - `grub` + `xorriso`
 - `qemu` with x86_64 support
 - `cargo` + `rustc` and a `nightly` Rust toolchain
+
+If you want to debug it, you also need `gdb`.
 
 On Arch Linux, these dependencies can be installed with the command
 ```
