@@ -1,14 +1,20 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
+#![feature(naked_functions)]
+#![feature(asm_const)]
 
+mod ctlregs;
 mod heap;
-mod idt;
+mod interrupts;
+mod panic;
+mod port;
 mod textmode;
 mod writer;
 
-use crate::{idt::init_idt, textmode::VgaTextModeWriter};
-use core::{arch::asm, hint::unreachable_unchecked, panic::PanicInfo};
+use interrupts::idt::setup_interrupts;
+
+use crate::textmode::VgaTextModeWriter;
 
 extern crate alloc;
 
@@ -18,30 +24,30 @@ pub static mut WRITER: VgaTextModeWriter = VgaTextModeWriter::new();
 unsafe extern "C" fn kernel_main() -> ! {
     WRITER.row = 3;
 
-    println!("Initializing IDT...");
-    init_idt();
+    setup_interrupts();
 
-    println!("I'm about to page fault!");
-    trigger_page_fault();
-    println!("I survived a page fault!");
+    println!("[ ok ] set up interrupts");
+    neofetch();
 
-    // let n: u32 =  *( 0xea5dac6df70d2a7c as *const u32 );
-    // println!("n = {}", n);
-
-    // let x = Box::new(41);
-    // println!("boxed int: {:?}", x);
-
-    asm!("hlt");
-    unreachable_unchecked();
-}
-
-fn trigger_page_fault() {
-    unsafe{ *(0xdeadbeaf as *mut u64) = 1234 };
-}
-
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
+    println!("The PIC timer interrupt is creating these dots:");
 
     loop {}
+}
+
+fn neofetch() {
+    let art = r#"
+                 .d88b,  MMMMMMMMMMM MMMMMMMMMMM
+           qq         8  MMP"""""YMM MP""""""`MM 
+           88    d8888P  M' .mmm. `M M  mmmmm..M 
+.d8888b. d8888P  8       M  MMMMM  M M.      `YM 
+88'  `88   88    `8888'  M  MMMMM  M MMMMMMM.  M 
+88.  .88   88            M. `MMM' .M M. .MMM'  M 
+`88888P8   dP            MMb.   .dMM Mb.     .dM 
+                         MMMMMMMMMMM MMMMMMMMMMM 
+
+      A Tiny Test Operating System
+        v0.1 by Martin Velikov
+    "#;
+
+    println!("{}", art);
 }

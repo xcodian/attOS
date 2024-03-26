@@ -20,7 +20,6 @@ build: $(asm_objects) kernel
 	mkdir -p target && \
 	ld -n -o target/atos-kernel.bin -T linker.ld $(asm_objects) target/kernel/kernel.a && \
 	cp -v target/atos-kernel.bin iso/boot/atos-kernel.bin && \
-	strip -s iso/boot/atos-kernel.bin && \
 	grub-mkrescue /usr/lib/grub/i386-pc -o target/atos.iso iso
 
 clean:
@@ -28,6 +27,10 @@ clean:
 	rm -rf target/*
 
 run:
-	qemu-system-x86_64 -cdrom target/atos.iso
+	qemu-system-x86_64 -cdrom target/atos.iso -enable-kvm
 
-dev: build run ;
+dbg:
+	qemu-system-x86_64 -no-reboot -no-shutdown -enable-kvm -d int -cdrom target/atos.iso -s -S & \
+	gdb -ex "file target/atos-kernel.bin" -ex "target remote localhost:1234"
+
+dev: build run;
