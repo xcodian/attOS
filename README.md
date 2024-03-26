@@ -1,15 +1,15 @@
 ```
-                                                   .d88b,  MMMMMMMMMMM MMMMMMMMMMM
-                                             qq         8  MMP"""""YMM MP""""""`MM 
-                                             88    d8888P  M' .mmm. `M M  mmmmm..M 
-                                  .d8888b. d8888P  8       M  MMMMM  M M.      `YM 
-                                  88'  `88   88    `8888'  M  MMMMM  M MMMMMMM.  M 
-                                  88.  .88   88            M. `MMM' .M M. .MMM'  M 
-                                  `88888P8   dP            MMb.   .dMM Mb.     .dM 
-                                                           MMMMMMMMMMM MMMMMMMMMMM 
-                                  
-                                      Another Tiny Test Operating System
-                                             by Martin Velikov
+                                         .d88b,  MMMMMMMMMMM MMMMMMMMMMM
+                                   qq         8  MMP"""""YMM MP""""""`MM 
+                                   88    d8888P  M' .mmm. `M M  mmmmm..M 
+                        .d8888b. d8888P  8       M  MMMMM  M M.      `YM 
+                        88'  `88   88    `8888'  M  MMMMM  M MMMMMMM.  M 
+                        88.  .88   88            M. `MMM' .M M. .MMM'  M 
+                        `88888P8   dP            MMb.   .dMM Mb.     .dM 
+                                                 MMMMMMMMMMM MMMMMMMMMMM 
+                        
+                            Another Tiny Test Operating System
+                                   by Martin Velikov
 ```
 
 # attOS: Another Tiny Test Operating System
