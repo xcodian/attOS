@@ -6,10 +6,20 @@ pub mod handlers;
 pub mod pic8259;
 pub mod hardware;
 
-pub unsafe fn enable_interrupts() {
-    asm!("sti", options(preserves_flags, nostack));
+pub fn enable_interrupts() {
+    unsafe {
+        asm!("sti", options(preserves_flags, nostack));
+    }
 }
 
-pub unsafe fn disable_interrupts() {
-    asm!("cli", options(preserves_flags, nostack));
+pub fn disable_interrupts() {
+    unsafe {
+        asm!("cli", options(preserves_flags, nostack));
+    }
+}
+
+pub fn without_interrupts<F: FnOnce() -> ()>(f: F) {
+    disable_interrupts();
+    f();
+    enable_interrupts();
 }

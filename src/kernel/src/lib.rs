@@ -3,6 +3,7 @@
 #![feature(panic_info_message)]
 #![feature(naked_functions)]
 #![feature(asm_const)]
+#![allow(dead_code)]
 
 mod ctlregs;
 mod heap;
@@ -13,26 +14,35 @@ mod sync;
 mod textmode;
 mod writer;
 
-use interrupts::idt::setup_interrupts;
+use core::arch::asm;
+use core::hint::unreachable_unchecked;
 
+use crate::interrupts::idt::setup_interrupts;
+use crate::interrupts::without_interrupts;
+use crate::sync::Mutex;
 use crate::textmode::VgaTextModeWriter;
 
 extern crate alloc;
 
-pub static mut WRITER: VgaTextModeWriter = VgaTextModeWriter::new();
+atos_lazy_static! {
+    pub static ref MY_LAZY: i32 = 1;
+    pub static ref WRITER: Mutex<VgaTextModeWriter> = Mutex::new(VgaTextModeWriter::new());
+}
 
 #[no_mangle]
 unsafe extern "C" fn kernel_main() -> ! {
-    WRITER.row = 3;
+    // WRITER.lock().row = 3;
 
     setup_interrupts();
 
     println!("[ ok ] set up interrupts");
     neofetch();
 
-    println!("The PIC timer interrupt is running.");
-
-    loop {}
+    println!("The PIC timer interrupt is running:");
+    
+    loop {
+        asm!("hlt");
+    }
 }
 
 fn neofetch() {
@@ -46,7 +56,7 @@ fn neofetch() {
 `88888P8   dP            MMb.   .dMM Mb.     .dM 
                          MMMMMMMMMMM MMMMMMMMMMM 
 
-      A Tiny Test Operating System
+      A Tiny (Test) Operating System
         v0.1 by Martin Velikov
     "#;
 

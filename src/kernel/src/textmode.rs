@@ -95,7 +95,5 @@ macro_rules! println {
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
-    unsafe {
-        let _ = WRITER.write_fmt(args);
-    }
+    let _ = WRITER.lock().write_fmt(args);
 }

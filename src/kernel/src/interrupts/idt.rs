@@ -1,26 +1,30 @@
 use core::{
-    arch::asm,
-    mem::size_of,
-    ops::{Deref, DerefMut},
-    ptr::addr_of,
+    arch::asm, mem::size_of, ops::{Deref, DerefMut}, pin::Pin, ptr::addr_of
 };
 
 use crate::{
-    exc_handler,
+    atos_lazy_static, exc_handler,
     interrupts::{
         handlers::{kdouble_fault, kgprot_fault, kinvalid_opcode, kpage_fault},
-        hardware::{timer::timer_interrupt, HwInterrupt},
+        hardware::{keyboard::keyboard_interrupt, timer::timer_interrupt, HwInterrupt},
     },
+    println,
+    sync::Mutex,
 };
 
 use super::{enable_interrupts, pic8259::init_chained_pic8259};
 
-pub static mut IDT: Idt = Idt::new();
+atos_lazy_static!(
+    pub static ref IDT: Mutex<Idt> = Mutex::new(Idt::new());
+    pub static ref IDT_REF: IdtRef = {
+        let idt_addr = &*IDT.lock() as *const Idt as u64;
 
-static mut IDT_REF: IdtRef = IdtRef {
-    base: unsafe { addr_of!(IDT) },
-    limit: (size_of::<Idt>() - 1) as u16,
-};
+        IdtRef {
+            ptr: idt_addr,
+            limit: (size_of::<Idt>() - 1) as u16,
+        }
+    };
+);
 
 #[repr(C, packed)]
 #[derive(Clone, Copy)]
@@ -55,7 +59,7 @@ impl IdtEntry {
 #[repr(C, packed(2))]
 pub struct IdtRef {
     limit: u16,
-    base: *const Idt,
+    ptr: u64,
 }
 
 pub type IdtEntries = [IdtEntry; 256];
@@ -83,18 +87,32 @@ impl DerefMut for Idt {
     }
 }
 
-pub unsafe fn init_idt() {
-    // register interrupt handlers
-    // https://wiki.osdev.org/Exceptions
-    IDT[0x6] = IdtEntry::new(exc_handler!(kinvalid_opcode), 0x8E);
-    IDT[0x8] = IdtEntry::new(exc_handler!(+code kdouble_fault), 0x8E);
-    IDT[0xD] = IdtEntry::new(exc_handler!(+code kgprot_fault), 0x8E);
-    IDT[0xE] = IdtEntry::new(exc_handler!(+code kpage_fault), 0x8E);
+extern "C" fn isr_stub() {
+    println!("isr_stub: unhandled interrupt!");
+}
 
-    IDT[HwInterrupt::Timer.as_usize()] = IdtEntry::new(exc_handler!(timer_interrupt), 0x8E);
+pub unsafe fn init_idt() {
+    {
+        let mut idt = IDT.lock();
+    
+        for i in 0..256 {
+            idt[i] = IdtEntry::new(isr_stub as *const () as u64, 0x8E);
+        }
+    
+        // register interrupt handlers
+        // https://wiki.osdev.org/Exceptions
+        idt[0x6] = IdtEntry::new(exc_handler!(kinvalid_opcode), 0x8E);
+        idt[0x8] = IdtEntry::new(exc_handler!(+code kdouble_fault), 0x8E);
+        idt[0xD] = IdtEntry::new(exc_handler!(+code kgprot_fault), 0x8E);
+        idt[0xE] = IdtEntry::new(exc_handler!(+code kpage_fault), 0x8E);
+    
+        idt[HwInterrupt::Timer.as_usize()] = IdtEntry::new(exc_handler!(timer_interrupt), 0x8E);
+        idt[HwInterrupt::Keyboard.as_usize()] = IdtEntry::new(exc_handler!(keyboard_interrupt), 0x8E);
+    }
 
     // load the table
-    asm!("lidt [{}]", in(reg) addr_of!(IDT_REF), options(readonly, nostack, preserves_flags));
+    let idt_ref = &*IDT_REF as *const IdtRef;
+    asm!("lidt [{}]", in(reg) idt_ref, options(readonly, nostack, preserves_flags));
 }
 
 pub fn setup_interrupts() {
